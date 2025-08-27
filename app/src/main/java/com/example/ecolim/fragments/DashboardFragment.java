@@ -65,8 +65,7 @@ public class DashboardFragment extends Fragment {
                     masValioso = r;
                 }
 
-                // Contar reciclados (si tipo contiene "reciclado")
-                if (r.tipo != null && r.tipo.toLowerCase(Locale.ROOT).contains("reciclado")) {
+                if (r.tipo != null && r.tipo.toLowerCase(Locale.ROOT).contains("recic")) {
                     reciclados++;
                 }
 

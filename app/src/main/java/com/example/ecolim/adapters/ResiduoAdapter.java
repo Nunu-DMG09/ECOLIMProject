@@ -34,6 +34,7 @@ public class ResiduoAdapter extends RecyclerView.Adapter<ResiduoAdapter.VH> {
     public void onBindViewHolder(@NonNull VH h, int pos) {
         Residuo r = data.get(pos);
         h.tvTipo.setText("Tipo: " + (r.tipo != null ? r.tipo : "-"));
+        h.tvNombre.setText("Nombre: " + (r.nombre));
         h.tvCategoria.setText("Categoría: " + (r.categoria != null ? r.categoria : "-"));
         h.tvDescripcion.setText("Descripción: " + (r.descripcion != null ? r.descripcion : "-"));
         h.tvPeso.setText(String.format("Peso: %.2f kg", r.peso));
@@ -43,6 +44,7 @@ public class ResiduoAdapter extends RecyclerView.Adapter<ResiduoAdapter.VH> {
         h.tvValor.setText("Valor: S/" + r.valorAproximado);
         h.tvResponsable.setText("Responsable: " + (r.responsable != null ? r.responsable : "-"));
         h.tvUbicacion.setText("Ubicación: " + (r.ubicacion != null ? r.ubicacion : "-"));
+        h.tvEstado.setText("Estado: " + (r.estado));
     }
 
     @Override
@@ -51,11 +53,12 @@ public class ResiduoAdapter extends RecyclerView.Adapter<ResiduoAdapter.VH> {
     }
 
     static class VH extends RecyclerView.ViewHolder {
-        TextView tvTipo, tvCategoria, tvDescripcion, tvPeso, tvFecha, tvCodigo, tvOrigen, tvValor, tvResponsable, tvUbicacion;
+        TextView tvTipo, tvNombre, tvCategoria, tvDescripcion, tvPeso, tvFecha, tvCodigo, tvOrigen, tvValor, tvResponsable, tvUbicacion, tvEstado;
 
         VH(@NonNull View v) {
             super(v);
             tvTipo = v.findViewById(R.id.tvTipo);
+            tvNombre = v.findViewById(R.id.tvNombre);
             tvCategoria = v.findViewById(R.id.tvCategoria);
             tvDescripcion = v.findViewById(R.id.tvDescripcion);
             tvPeso = v.findViewById(R.id.tvPeso);
@@ -65,6 +68,7 @@ public class ResiduoAdapter extends RecyclerView.Adapter<ResiduoAdapter.VH> {
             tvValor = v.findViewById(R.id.tvValor);
             tvResponsable = v.findViewById(R.id.tvResponsable);
             tvUbicacion = v.findViewById(R.id.tvUbicacion);
+            tvEstado = v.findViewById(R.id.tvEstado);
         }
     }
 }

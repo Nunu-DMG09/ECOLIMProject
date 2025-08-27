@@ -79,7 +79,7 @@ public class ReportesFragment extends Fragment {
 
             // Estilos
             Font tituloFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
-            Font encabezadoFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD, BaseColor.WHITE);
+            Font encabezadoFont = new Font(Font.FontFamily.HELVETICA, 11, Font.BOLD, BaseColor.WHITE);
             Font normalFont = new Font(Font.FontFamily.HELVETICA, 10, Font.NORMAL);
 
             // Título
@@ -92,33 +92,35 @@ public class ReportesFragment extends Fragment {
                     new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault()).format(new java.util.Date())));
             document.add(new Paragraph("\n"));
 
-            // Tabla con encabezados
-            PdfPTable table = new PdfPTable(10); // número de columnas
+            // Tabla con 12 columnas
+            PdfPTable table = new PdfPTable(12);
             table.setWidthPercentage(100);
-            table.setWidths(new float[]{2f, 3f, 3f, 3f, 3f, 2f, 3f, 3f, 3f, 3f});
+            table.setWidths(new float[]{2f, 3f, 3f, 3f, 3f, 3f, 2f, 3f, 3f, 3f, 3f, 3f}); // Ajustado
 
             // Encabezados con fondo
-            String[] headers = {"ID", "Código", "Tipo", "Categoría", "Descripción", "Peso", "Fecha", "Origen", "Valor", "Responsable"};
+            String[] headers = {"ID", "Código", "Nombre", "Tipo", "Categoría", "Descripción", "Peso", "Fecha", "Origen", "Valor", "Responsable", "Estado"};
             for (String header : headers) {
                 PdfPCell cell = new PdfPCell(new Paragraph(header, encabezadoFont));
                 cell.setBackgroundColor(new BaseColor(0, 51, 147)); // Azul oscuro
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                cell.setPadding(5);
+                cell.setPadding(8); // Más separación
                 table.addCell(cell);
             }
 
             // Datos
             for (Residuo residuo : listaResiduos) {
-                table.addCell(new Paragraph(String.valueOf(residuo.id), normalFont));
-                table.addCell(new Paragraph(residuo.codigo != null ? residuo.codigo : "-", normalFont));
-                table.addCell(new Paragraph(residuo.tipo != null ? residuo.tipo : "-", normalFont));
-                table.addCell(new Paragraph(residuo.categoria != null ? residuo.categoria : "-", normalFont));
-                table.addCell(new Paragraph(residuo.descripcion != null ? residuo.descripcion : "-", normalFont));
-                table.addCell(new Paragraph(residuo.peso + " kg", normalFont));
-                table.addCell(new Paragraph(residuo.fecha != null ? residuo.fecha : "-", normalFont));
-                table.addCell(new Paragraph(residuo.origen != null ? residuo.origen : "-", normalFont));
-                table.addCell(new Paragraph("$" + residuo.valorAproximado, normalFont));
-                table.addCell(new Paragraph(residuo.responsable != null ? residuo.responsable : "-", normalFont));
+                table.addCell(createCell(String.valueOf(residuo.id), normalFont));
+                table.addCell(createCell(residuo.codigo, normalFont));
+                table.addCell(createCell(residuo.nombre, normalFont));
+                table.addCell(createCell(residuo.tipo, normalFont));
+                table.addCell(createCell(residuo.categoria, normalFont));
+                table.addCell(createCell(residuo.descripcion, normalFont));
+                table.addCell(createCell(residuo.peso + " kg", normalFont));
+                table.addCell(createCell(residuo.fecha, normalFont));
+                table.addCell(createCell(residuo.origen, normalFont));
+                table.addCell(createCell("$" + residuo.valorAproximado, normalFont));
+                table.addCell(createCell(residuo.responsable, normalFont));
+                table.addCell(createCell(residuo.estado, normalFont));
             }
 
             document.add(table);
@@ -131,6 +133,14 @@ public class ReportesFragment extends Fragment {
             e.printStackTrace();
             Toast.makeText(requireContext(), "Error al generar PDF", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    // Metodo auxiliar para evitar null y mejorar alineación
+    private PdfPCell createCell(String text, Font font) {
+        PdfPCell cell = new PdfPCell(new Paragraph(text != null ? text : "-", font));
+        cell.setPadding(6); // Más separación entre texto y bordes
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        return cell;
     }
 
     private void compartirPDF(File file) {
