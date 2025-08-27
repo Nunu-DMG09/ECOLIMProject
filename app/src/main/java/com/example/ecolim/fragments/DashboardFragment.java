@@ -1,10 +1,13 @@
 package com.example.ecolim.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,17 +19,28 @@ import com.example.ecolim.R;
 import com.example.ecolim.models.Residuo;
 import com.example.ecolim.viewmodel.ResiduoViewModel;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.*;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
+import android.widget.Toast;
+import androidx.core.content.FileProvider;
+
 
 public class DashboardFragment extends Fragment {
 
     private ResiduoViewModel vm;
     private TextView tvTotalReg, tvTotalKg, tvUltimo, tvMasValioso, tvPorcentajeReciclados, tvUbicacionFrecuente;
-    private TextView tvCategorias, tvMasPesado, tvValorTotal, tvUltimaUbicacion; // NUEVOS
+    private TextView tvCategorias, tvMasPesado, tvValorTotal, tvUltimaUbicacion;
+    private TextView tvTopCategorias, tvResiduoFrecuente, tvPromedioPeso, tvRecicladosVsNo, tvValorPromedio;
+    private Button btnGenerarPDF;
+
+    private List<Residuo> listaResiduos = new ArrayList<>();
 
     @SuppressLint("MissingInflatedId")
     @Nullable
@@ -42,11 +56,18 @@ public class DashboardFragment extends Fragment {
         tvPorcentajeReciclados = v.findViewById(R.id.tvPorcentajeReciclados);
         tvUbicacionFrecuente = v.findViewById(R.id.tvUbicacionFrecuente);
 
-        // NUEVOS TextViews (debes agregarlos en tu XML)
+        // Nuevos TextViews (debes agregarlos en XML)
         tvCategorias = v.findViewById(R.id.tvCategorias);
         tvMasPesado = v.findViewById(R.id.tvMasPesado);
         tvValorTotal = v.findViewById(R.id.tvValorTotal);
         tvUltimaUbicacion = v.findViewById(R.id.tvUltimaUbicacion);
+        tvTopCategorias = v.findViewById(R.id.tvTopCategorias);
+        tvResiduoFrecuente = v.findViewById(R.id.tvResiduoFrecuente);
+        tvPromedioPeso = v.findViewById(R.id.tvPromedioPeso);
+        tvRecicladosVsNo = v.findViewById(R.id.tvRecicladosVsNo);
+        tvValorPromedio = v.findViewById(R.id.tvValorPromedio);
+
+        btnGenerarPDF = v.findViewById(R.id.btnGenerarPDF);
 
         return v;
     }
@@ -56,6 +77,7 @@ public class DashboardFragment extends Fragment {
         vm = new ViewModelProvider(requireActivity()).get(ResiduoViewModel.class);
 
         vm.residuos.observe(getViewLifecycleOwner(), list -> {
+            listaResiduos = list; // Para usar en el PDF
             int total = list.size();
             double kg = 0;
             String ultimo = "-";
@@ -63,80 +85,183 @@ public class DashboardFragment extends Fragment {
             Residuo masValioso = null;
             Residuo masPesado = null;
             int reciclados = 0;
+            int noReciclados = 0;
             double valorTotal = 0;
 
             Map<String, Integer> ubicaciones = new HashMap<>();
+            Map<String, Integer> categoriasContadas = new HashMap<>();
+            Map<String, Integer> residuosContados = new HashMap<>();
             Set<String> categoriasUnicas = new HashSet<>();
 
             if (!list.isEmpty()) {
-                ultimo = list.get(0).fecha; // asumiendo orden por fecha desc
+                list.sort((r1, r2) -> r2.fecha.compareTo(r1.fecha)); // Orden descendente
+                ultimo = list.get(0).fecha;
             }
 
             for (Residuo r : list) {
                 kg += r.peso;
                 valorTotal += r.valorAproximado;
 
-                // Más valioso
                 if (masValioso == null || r.valorAproximado > masValioso.valorAproximado) {
                     masValioso = r;
                 }
 
-                // Más pesado
                 if (masPesado == null || r.peso > masPesado.peso) {
                     masPesado = r;
                 }
 
-                // Contar reciclados
                 if (r.tipo != null && r.tipo.toLowerCase(Locale.ROOT).contains("reciclable")) {
                     reciclados++;
+                } else {
+                    noReciclados++;
                 }
 
-                // Categorías únicas
                 if (r.categoria != null && !r.categoria.isEmpty()) {
                     categoriasUnicas.add(r.categoria);
+                    categoriasContadas.put(r.categoria, categoriasContadas.getOrDefault(r.categoria, 0) + 1);
                 }
 
-                // Contar ubicación más frecuente
+                if (r.nombre != null && !r.nombre.isEmpty()) {
+                    residuosContados.put(r.nombre, residuosContados.getOrDefault(r.nombre, 0) + 1);
+                }
+
                 if (r.origen != null && !r.origen.isEmpty()) {
                     ubicaciones.put(r.origen, ubicaciones.getOrDefault(r.origen, 0) + 1);
                 }
             }
 
-            // Calcular ubicación más frecuente
-            String ubicacionFrecuente = "-";
-            int maxCount = 0;
-            for (Map.Entry<String, Integer> entry : ubicaciones.entrySet()) {
-                if (entry.getValue() > maxCount) {
-                    maxCount = entry.getValue();
-                    ubicacionFrecuente = entry.getKey();
-                }
-            }
+            String ultimaUbicacion = list.isEmpty() || list.get(0).ubicacion == null ? "-" : list.get(0).ubicacion;
+
+            // Ubicación más frecuente
+            String ubicacionFrecuente = getMaxKey(ubicaciones);
+
+            // Categoría más frecuente (Top)
+            String topCategorias = getTopItems(categoriasContadas, 3);
+
+            // Residuo más frecuente
+            String residuoFrecuente = getMaxKey(residuosContados);
 
             // Porcentaje reciclados
             double porcentaje = total > 0 ? (reciclados * 100.0 / total) : 0;
 
-            // Última ubicación registrada
-            String ultimaUbicacion = list.isEmpty() || list.get(0).ubicacion == null ? "-" : list.get(0).ubicacion;
+            // Promedio peso
+            double promedioPeso = total > 0 ? (kg / total) : 0;
 
-            // Setear datos en la UI
+            // Promedio valor
+            double promedioValor = total > 0 ? (valorTotal / total) : 0;
+
+            // Setear en UI
             tvTotalReg.setText(String.valueOf(total));
             tvTotalKg.setText(String.format(Locale.getDefault(), "%.2f kg", kg));
             tvUltimo.setText(ultimo);
-            tvMasValioso.setText(masValioso != null ? masValioso.tipo + " ($" + masValioso.valorAproximado + ")" : "-");
-            if (total > 0) {
-                tvPorcentajeReciclados.setText(String.format(Locale.getDefault(), "%.1f%%", porcentaje));
-            } else {
-                tvPorcentajeReciclados.setText("Sin datos");
-            }
+            tvMasValioso.setText(masValioso != null ? masValioso.tipo + " (S/ " + masValioso.valorAproximado + ")" : "-");
+            tvPorcentajeReciclados.setText(total > 0 ? String.format(Locale.getDefault(), "%.1f%%", porcentaje) : "Sin datos");
             tvUbicacionFrecuente.setText(ubicacionFrecuente);
-
-            // NUEVOS campos
             tvCategorias.setText(total > 0 ? categoriasUnicas.size() + " categorías" : "Sin datos");
             tvMasPesado.setText(masPesado != null ? masPesado.nombre + " (" + masPesado.peso + " kg)" : "-");
-            tvValorTotal.setText("$" + valorTotal);
+            tvValorTotal.setText("S/ " + valorTotal);
             tvUltimaUbicacion.setText(ultimaUbicacion);
+
+            // Nuevos datos
+            tvTopCategorias.setText(topCategorias);
+            tvResiduoFrecuente.setText(residuoFrecuente != null ? residuoFrecuente : "-");
+            tvPromedioPeso.setText(String.format(Locale.getDefault(), "%.2f kg", promedioPeso));
+            tvRecicladosVsNo.setText("Reciclables: " + reciclados + " | No reciclables: " + noReciclados);
+            tvValorPromedio.setText(String.format(Locale.getDefault(), "S/ %.2f", promedioValor));
         });
 
         vm.cargarTodos();
+
+        btnGenerarPDF.setOnClickListener(v -> generarPDF());
     }
+
+    private String getMaxKey(Map<String, Integer> map) {
+        String maxKey = "-";
+        int maxVal = 0;
+        for (Map.Entry<String, Integer> e : map.entrySet()) {
+            if (e.getValue() > maxVal) {
+                maxVal = e.getValue();
+                maxKey = e.getKey();
+            }
+        }
+        return maxKey;
+    }
+
+    private String getTopItems(Map<String, Integer> map, int top) {
+        List<Map.Entry<String, Integer>> list = new ArrayList<>(map.entrySet());
+        list.sort((a, b) -> b.getValue() - a.getValue());
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < Math.min(top, list.size()); i++) {
+            sb.append(list.get(i).getKey()).append(" (").append(list.get(i).getValue()).append(")\n");
+        }
+        return sb.toString().isEmpty() ? "-" : sb.toString();
+    }
+
+    private void generarPDF() {
+        try {
+            // Ruta para guardar el archivo
+            String pdfPath = requireContext().getExternalFilesDir(null).getAbsolutePath();
+            File file = new File(pdfPath, "dashboard_residuos.pdf");
+            FileOutputStream outputStream = new FileOutputStream(file);
+
+            Document document = new Document();
+            PdfWriter.getInstance(document, outputStream);
+            document.open();
+
+            // Fuentes
+            Font tituloFont = new Font(Font.FontFamily.HELVETICA, 20, Font.BOLD);
+            Font subtituloFont = new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD);
+            Font normalFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
+
+            // Título
+            Paragraph title = new Paragraph("Reporte Dashboard\n\n", tituloFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            document.add(title);
+
+            // Fecha
+            String fecha = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
+                    .format(new java.util.Date());
+            document.add(new Paragraph("Fecha de generación: " + fecha, normalFont));
+            document.add(new Paragraph("\n"));
+
+            // Datos principales
+            document.add(new Paragraph("Resumen general:", subtituloFont));
+            document.add(new Paragraph("Total registros: " + tvTotalReg.getText(), normalFont));
+            document.add(new Paragraph("Total kg: " + tvTotalKg.getText(), normalFont));
+            document.add(new Paragraph("Último registro: " + tvUltimo.getText(), normalFont));
+            document.add(new Paragraph("Más valioso: " + tvMasValioso.getText(), normalFont));
+            document.add(new Paragraph("% Reciclados: " + tvPorcentajeReciclados.getText(), normalFont));
+            document.add(new Paragraph("Ubicación frecuente: " + tvUbicacionFrecuente.getText(), normalFont));
+            document.add(new Paragraph("Categorías únicas: " + tvCategorias.getText(), normalFont));
+            document.add(new Paragraph("Más pesado: " + tvMasPesado.getText(), normalFont));
+            document.add(new Paragraph("Valor total: " + tvValorTotal.getText(), normalFont));
+            document.add(new Paragraph("Última ubicación: " + tvUltimaUbicacion.getText(), normalFont));
+            document.add(new Paragraph("Top categorías:\n" + tvTopCategorias.getText(), normalFont));
+            document.add(new Paragraph("Residuo más frecuente: " + tvResiduoFrecuente.getText(), normalFont));
+            document.add(new Paragraph("Promedio peso: " + tvPromedioPeso.getText(), normalFont));
+            document.add(new Paragraph("Reciclables vs No: " + tvRecicladosVsNo.getText(), normalFont));
+            document.add(new Paragraph("Valor promedio: " + tvValorPromedio.getText(), normalFont));
+
+            document.close();
+
+            Toast.makeText(requireContext(), "PDF generado en: " + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
+            compartirPDF(file);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(requireContext(), "Error al generar PDF", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void compartirPDF(File file) {
+        Uri uri = FileProvider.getUriForFile(requireContext(), requireContext().getPackageName() + ".provider", file);
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("application/pdf");
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        startActivity(Intent.createChooser(intent, "Compartir PDF"));
+    }
+
 }
