@@ -23,10 +23,11 @@ import com.google.zxing.integration.android.IntentResult;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import android.content.Context;
 
 public class RegistroFragment extends Fragment {
 
-    private EditText etTipo, etPeso;
+    private EditText etTipo, etPeso, etCategoria, etDescripcion, etOrigen, etValor, etResponsable, etUbicacion;
     private Button btnGuardar, btnEscanear;
     private TextView tvCodigo;
     private String codigoQR = "";
@@ -36,8 +37,18 @@ public class RegistroFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_registro, container, false);
 
+        // Campos existentes
         etTipo = view.findViewById(R.id.etTipo);
         etPeso = view.findViewById(R.id.etPeso);
+
+        // Nuevos campos
+        etCategoria = view.findViewById(R.id.etCategoria);
+        etDescripcion = view.findViewById(R.id.etDescripcion);
+        etOrigen = view.findViewById(R.id.etOrigen);
+        etValor = view.findViewById(R.id.etValor);
+        etResponsable = view.findViewById(R.id.etResponsable);
+        etUbicacion = view.findViewById(R.id.etUbicacion);
+
         btnGuardar = view.findViewById(R.id.btnGuardar);
         btnEscanear = view.findViewById(R.id.btnEscanear);
         tvCodigo = view.findViewById(R.id.tvCodigo);
@@ -71,11 +82,17 @@ public class RegistroFragment extends Fragment {
     }
 
     private void guardarResiduo() {
+        // Captura de valores
         String tipo = etTipo.getText().toString().trim();
         String pesoStr = etPeso.getText().toString().trim();
+        String categoria = etCategoria.getText().toString().trim();
+        String descripcion = etDescripcion.getText().toString().trim();
+        String origen = etOrigen.getText().toString().trim();
+        String valorStr = etValor.getText().toString().trim();
+        String ubicacion = etUbicacion.getText().toString().trim();
 
         if (tipo.isEmpty() || pesoStr.isEmpty()) {
-            Toast.makeText(getContext(), "Complete los campos", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Complete los campos obligatorios", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -87,8 +104,37 @@ public class RegistroFragment extends Fragment {
             return;
         }
 
+        double valor = 0;
+        if (!valorStr.isEmpty()) {
+            try {
+                valor = Double.parseDouble(valorStr);
+            } catch (NumberFormatException e) {
+                Toast.makeText(getContext(), "Valor inválido, se guardará como 0", Toast.LENGTH_SHORT).show();
+            }
+        }
+
         String fecha = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-        Residuo residuo = new Residuo(tipo, peso, fecha, codigoQR.isEmpty() ? "-" : codigoQR);
+
+        // ✅ Obtener el nombre del usuario logueado
+        String responsable = getActivity()
+                .getSharedPreferences("ECOLIM_PREFS", Context.MODE_PRIVATE)
+                .getString("usuario", "Desconocido");
+
+        // Crear objeto Residuo con todos los campos
+        Residuo residuo = new Residuo(
+                tipo,
+                categoria,
+                peso,  // Ahora correcto
+                fecha,
+                codigoQR.isEmpty() ? "-" : codigoQR,
+                descripcion,
+                origen,
+                valor,
+                "Reciclado", // Estado por defecto, puedes cambiarlo según lógica
+                responsable,
+                ubicacion
+        );
+
 
         btnGuardar.setEnabled(false);
 
@@ -97,13 +143,23 @@ public class RegistroFragment extends Fragment {
             if (getActivity() != null) {
                 getActivity().runOnUiThread(() -> {
                     Toast.makeText(getContext(), "Registro guardado", Toast.LENGTH_SHORT).show();
-                    etTipo.setText("");
-                    etPeso.setText("");
-                    tvCodigo.setText("Código: -");
-                    codigoQR = "";
+                    limpiarCampos();
                     btnGuardar.setEnabled(true);
                 });
             }
         }).start();
+    }
+
+    private void limpiarCampos() {
+        etTipo.setText("");
+        etPeso.setText("");
+        etCategoria.setText("");
+        etDescripcion.setText("");
+        etOrigen.setText("");
+        etValor.setText("");
+        etResponsable.setText("");
+        etUbicacion.setText("");
+        tvCodigo.setText("Código: -");
+        codigoQR = "";
     }
 }

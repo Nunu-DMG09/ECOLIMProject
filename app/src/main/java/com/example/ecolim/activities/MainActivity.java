@@ -10,6 +10,7 @@ import com.example.ecolim.R;
 import com.example.ecolim.fragments.DashboardFragment;
 import com.example.ecolim.fragments.RegistroFragment;
 import com.example.ecolim.fragments.ReportesFragment;
+import com.example.ecolim.fragments.UsuarioFragment;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -50,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
                 selected = new RegistroFragment();
             } else if (item.getItemId() == R.id.nav_reportes) {
                 selected = new ReportesFragment();
+            } else if (item.getItemId() == R.id.nav_usuario) {
+                selected = new UsuarioFragment();
             }
             if (selected != null) {
                 getSupportFragmentManager().beginTransaction()

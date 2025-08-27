@@ -12,4 +12,8 @@
         android:id="@+id/nav_reportes"
         android:title="Reportes"
         android:icon="@drawable/ico_reporte"/>
+    <item
+        android:id="@+id/nav_usuario"
+        android:icon="@drawable/ic_person"
+        android:title="Perfil" />
 </menu>

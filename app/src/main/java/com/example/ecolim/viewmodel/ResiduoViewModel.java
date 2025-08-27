@@ -1,11 +1,17 @@
 package com.example.ecolim.viewmodel;
 
 import android.app.Application;
+
 import androidx.annotation.NonNull;
-import androidx.lifecycle.*;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.MutableLiveData;
+
 import com.example.ecolim.db.AppDatabase;
 import com.example.ecolim.models.Residuo;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 
 public class ResiduoViewModel extends AndroidViewModel {
@@ -21,8 +27,7 @@ public class ResiduoViewModel extends AndroidViewModel {
     public void cargarTodos() {
         Executors.newSingleThreadExecutor().execute(() -> {
             List<Residuo> list = db.residuoDao().getAll();
-            // Orden por fecha desc si tu DAO no lo hace
-            list.sort((a,b) -> b.fecha.compareTo(a.fecha));
+            list.sort((a, b) -> b.fecha.compareTo(a.fecha)); // Orden descendente por fecha
             residuos.postValue(list);
             residuosFiltrados.postValue(list);
         });
@@ -33,12 +38,12 @@ public class ResiduoViewModel extends AndroidViewModel {
         if (base == null) base = new ArrayList<>();
         final String fDesde = (desde == null) ? "" : desde;
         final String fHasta = (hasta == null) ? "9999-12-31" : hasta;
-        final String fTipo  = (tipo == null) ? "" : tipo.toLowerCase(Locale.ROOT);
+        final String fTipo = (tipo == null) ? "" : tipo.toLowerCase(Locale.ROOT);
 
         List<Residuo> out = new ArrayList<>();
         for (Residuo r : base) {
             boolean okFecha = r.fecha.compareTo(fDesde) >= 0 && r.fecha.compareTo(fHasta) <= 0;
-            boolean okTipo  = fTipo.isEmpty() || (r.tipo != null && r.tipo.toLowerCase(Locale.ROOT).contains(fTipo));
+            boolean okTipo = fTipo.isEmpty() || (r.tipo != null && r.tipo.toLowerCase(Locale.ROOT).contains(fTipo));
             if (okFecha && okTipo) out.add(r);
         }
         residuosFiltrados.setValue(out);

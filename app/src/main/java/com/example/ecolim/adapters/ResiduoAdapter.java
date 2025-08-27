@@ -1,11 +1,16 @@
 package com.example.ecolim.adapters;
 
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.ecolim.R;
 import com.example.ecolim.models.Residuo;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,29 +23,48 @@ public class ResiduoAdapter extends RecyclerView.Adapter<ResiduoAdapter.VH> {
         notifyDataSetChanged();
     }
 
-    @NonNull @Override public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    @NonNull
+    @Override
+    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_residuo, parent, false);
         return new VH(v);
     }
 
-    @Override public void onBindViewHolder(@NonNull VH h, int pos) {
+    @Override
+    public void onBindViewHolder(@NonNull VH h, int pos) {
         Residuo r = data.get(pos);
-        h.tvTipo.setText(r.tipo);
-        h.tvPeso.setText(String.format("%.2f kg", r.peso));
-        h.tvFecha.setText(r.fecha);
-        h.tvCodigo.setText(r.codigo == null ? "-" : r.codigo);
+        h.tvTipo.setText("Tipo: " + (r.tipo != null ? r.tipo : "-"));
+        h.tvCategoria.setText("Categoría: " + (r.categoria != null ? r.categoria : "-"));
+        h.tvDescripcion.setText("Descripción: " + (r.descripcion != null ? r.descripcion : "-"));
+        h.tvPeso.setText(String.format("Peso: %.2f kg", r.peso));
+        h.tvFecha.setText("Fecha: " + (r.fecha != null ? r.fecha : "-"));
+        h.tvCodigo.setText("Código: " + (r.codigo != null ? r.codigo : "-"));
+        h.tvOrigen.setText("Origen: " + (r.origen != null ? r.origen : "-"));
+        h.tvValor.setText("Valor: $" + r.valorAproximado);
+        h.tvResponsable.setText("Responsable: " + (r.responsable != null ? r.responsable : "-"));
+        h.tvUbicacion.setText("Ubicación: " + (r.ubicacion != null ? r.ubicacion : "-"));
     }
 
-    @Override public int getItemCount() { return data.size(); }
+    @Override
+    public int getItemCount() {
+        return data.size();
+    }
 
     static class VH extends RecyclerView.ViewHolder {
-        TextView tvTipo, tvPeso, tvFecha, tvCodigo;
+        TextView tvTipo, tvCategoria, tvDescripcion, tvPeso, tvFecha, tvCodigo, tvOrigen, tvValor, tvResponsable, tvUbicacion;
+
         VH(@NonNull View v) {
             super(v);
             tvTipo = v.findViewById(R.id.tvTipo);
+            tvCategoria = v.findViewById(R.id.tvCategoria);
+            tvDescripcion = v.findViewById(R.id.tvDescripcion);
             tvPeso = v.findViewById(R.id.tvPeso);
-            tvFecha= v.findViewById(R.id.tvFecha);
-            tvCodigo= v.findViewById(R.id.tvCodigo);
+            tvFecha = v.findViewById(R.id.tvFecha);
+            tvCodigo = v.findViewById(R.id.tvCodigo);
+            tvOrigen = v.findViewById(R.id.tvOrigen);
+            tvValor = v.findViewById(R.id.tvValor);
+            tvResponsable = v.findViewById(R.id.tvResponsable);
+            tvUbicacion = v.findViewById(R.id.tvUbicacion);
         }
     }
 }

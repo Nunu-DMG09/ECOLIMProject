@@ -23,14 +23,15 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
 
-        // Inicializar base de datos
         AppDatabase db = AppDatabase.getInstance(this);
 
-        // Insertar usuarios de prueba si no existen
-        if (db.usuarioDao().getUsuariosCount() == 0) {
-            db.usuarioDao().insert(new Usuario("David", "david@gmail.com", "1234"));
-            db.usuarioDao().insert(new Usuario("Juan Pérez", "juan@ecolim.com", "abcd"));
-        }
+        // Insertar usuarios de prueba en segundo plano
+        new Thread(() -> {
+            if (db.usuarioDao().getUsuariosCount() == 0) {
+                db.usuarioDao().insert(new Usuario("David", "david@gmail.com", "1234"));
+                db.usuarioDao().insert(new Usuario("Juan Pérez", "juan@ecolim.com", "abcd"));
+            }
+        }).start();
 
         btnLogin.setOnClickListener(v -> {
             String email = etEmail.getText().toString().trim();
@@ -41,21 +42,23 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            // Validación en base de datos
-            Usuario usuario = db.usuarioDao().login(email, pass);
-            if (usuario != null) {
-                // Guardamos en SharedPreferences
-                getSharedPreferences("ECOLIM_PREFS", MODE_PRIVATE)
-                        .edit()
-                        .putString("usuario", usuario.nombre)
-                        .apply();
+            new Thread(() -> {
+                Usuario usuario = db.usuarioDao().login(email, pass);
+                runOnUiThread(() -> {
+                    if (usuario != null) {
+                        getSharedPreferences("ECOLIM_PREFS", MODE_PRIVATE)
+                                .edit()
+                                .putString("usuario", usuario.nombre)
+                                .putString("email", usuario.email)
+                                .apply();
 
-                // Ir al MainActivity
-                startActivity(new Intent(this, MainActivity.class));
-                finish();
-            } else {
-                Toast.makeText(this, "Credenciales incorrectas", Toast.LENGTH_SHORT).show();
-            }
+                        startActivity(new Intent(this, MainActivity.class));
+                        finish();
+                    } else {
+                        Toast.makeText(this, "Credenciales incorrectas", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }).start();
         });
     }
 }

@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase;
 import com.example.ecolim.models.Usuario;
 import com.example.ecolim.models.Residuo;
 
-@Database(entities = {Residuo.class, Usuario.class}, version = 2)
+@Database(entities = {Residuo.class, Usuario.class}, version = 3)
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase instance;
 

@@ -18,11 +18,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ecolim.R;
 import com.example.ecolim.adapters.ResiduoAdapter;
-
 import com.example.ecolim.models.Residuo;
 import com.example.ecolim.viewmodel.ResiduoViewModel;
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.File;
@@ -52,7 +56,6 @@ public class ReportesFragment extends Fragment {
         vm.residuos.observe(getViewLifecycleOwner(), adapter::submit);
         vm.cargarTodos();
 
-        // Asignamos el botón
         btnGenerarPDF = view.findViewById(R.id.btnGenerarPDF);
         btnGenerarPDF.setOnClickListener(v -> {
             List<Residuo> listaResiduos = vm.residuos.getValue();
@@ -74,19 +77,51 @@ public class ReportesFragment extends Fragment {
             PdfWriter.getInstance(document, outputStream);
             document.open();
 
-            document.add(new Paragraph("Reporte de Residuos"));
-            document.add(new Paragraph("Fecha: " + new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault()).format(new java.util.Date())));
-            document.add(new Paragraph(" "));
+            // Estilos
+            Font tituloFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
+            Font encabezadoFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD, BaseColor.WHITE);
+            Font normalFont = new Font(Font.FontFamily.HELVETICA, 10, Font.NORMAL);
 
-            for (Residuo residuo : listaResiduos) {
-                document.add(new Paragraph("ID: " + residuo.id));
-                document.add(new Paragraph("Código: " + residuo.codigo));
-                document.add(new Paragraph("Tipo: " + residuo.tipo));
-                document.add(new Paragraph("Peso: " + residuo.peso + " kg"));
-                document.add(new Paragraph("Fecha: " + residuo.fecha));
-                document.add(new Paragraph("---------------------------"));
+            // Título
+            Paragraph title = new Paragraph("Reporte de Residuos\n\n", tituloFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            document.add(title);
+
+            // Fecha
+            document.add(new Paragraph("Fecha: " +
+                    new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault()).format(new java.util.Date())));
+            document.add(new Paragraph("\n"));
+
+            // Tabla con encabezados
+            PdfPTable table = new PdfPTable(10); // número de columnas
+            table.setWidthPercentage(100);
+            table.setWidths(new float[]{2f, 3f, 3f, 3f, 3f, 2f, 3f, 3f, 3f, 3f});
+
+            // Encabezados con fondo
+            String[] headers = {"ID", "Código", "Tipo", "Categoría", "Descripción", "Peso", "Fecha", "Origen", "Valor", "Responsable"};
+            for (String header : headers) {
+                PdfPCell cell = new PdfPCell(new Paragraph(header, encabezadoFont));
+                cell.setBackgroundColor(new BaseColor(0, 51, 147)); // Azul oscuro
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                cell.setPadding(5);
+                table.addCell(cell);
             }
 
+            // Datos
+            for (Residuo residuo : listaResiduos) {
+                table.addCell(new Paragraph(String.valueOf(residuo.id), normalFont));
+                table.addCell(new Paragraph(residuo.codigo != null ? residuo.codigo : "-", normalFont));
+                table.addCell(new Paragraph(residuo.tipo != null ? residuo.tipo : "-", normalFont));
+                table.addCell(new Paragraph(residuo.categoria != null ? residuo.categoria : "-", normalFont));
+                table.addCell(new Paragraph(residuo.descripcion != null ? residuo.descripcion : "-", normalFont));
+                table.addCell(new Paragraph(residuo.peso + " kg", normalFont));
+                table.addCell(new Paragraph(residuo.fecha != null ? residuo.fecha : "-", normalFont));
+                table.addCell(new Paragraph(residuo.origen != null ? residuo.origen : "-", normalFont));
+                table.addCell(new Paragraph("$" + residuo.valorAproximado, normalFont));
+                table.addCell(new Paragraph(residuo.responsable != null ? residuo.responsable : "-", normalFont));
+            }
+
+            document.add(table);
             document.close();
 
             Toast.makeText(requireContext(), "PDF generado en: " + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
