@@ -17,26 +17,37 @@ import com.example.ecolim.models.Residuo;
 import com.example.ecolim.viewmodel.ResiduoViewModel;
 
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public class DashboardFragment extends Fragment {
 
     private ResiduoViewModel vm;
     private TextView tvTotalReg, tvTotalKg, tvUltimo, tvMasValioso, tvPorcentajeReciclados, tvUbicacionFrecuente;
+    private TextView tvCategorias, tvMasPesado, tvValorTotal, tvUltimaUbicacion; // NUEVOS
 
     @SuppressLint("MissingInflatedId")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_dashboard, container, false);
+
+        // IDs existentes
         tvTotalReg = v.findViewById(R.id.tvTotalReg);
         tvTotalKg = v.findViewById(R.id.tvTotalKg);
         tvUltimo = v.findViewById(R.id.tvUltimo);
         tvMasValioso = v.findViewById(R.id.tvMasValioso);
         tvPorcentajeReciclados = v.findViewById(R.id.tvPorcentajeReciclados);
         tvUbicacionFrecuente = v.findViewById(R.id.tvUbicacionFrecuente);
+
+        // NUEVOS TextViews (debes agregarlos en tu XML)
+        tvCategorias = v.findViewById(R.id.tvCategorias);
+        tvMasPesado = v.findViewById(R.id.tvMasPesado);
+        tvValorTotal = v.findViewById(R.id.tvValorTotal);
+        tvUltimaUbicacion = v.findViewById(R.id.tvUltimaUbicacion);
+
         return v;
     }
 
@@ -50,8 +61,12 @@ public class DashboardFragment extends Fragment {
             String ultimo = "-";
 
             Residuo masValioso = null;
+            Residuo masPesado = null;
             int reciclados = 0;
+            double valorTotal = 0;
+
             Map<String, Integer> ubicaciones = new HashMap<>();
+            Set<String> categoriasUnicas = new HashSet<>();
 
             if (!list.isEmpty()) {
                 ultimo = list.get(0).fecha; // asumiendo orden por fecha desc
@@ -59,14 +74,26 @@ public class DashboardFragment extends Fragment {
 
             for (Residuo r : list) {
                 kg += r.peso;
+                valorTotal += r.valorAproximado;
 
                 // Más valioso
                 if (masValioso == null || r.valorAproximado > masValioso.valorAproximado) {
                     masValioso = r;
                 }
 
-                if (r.tipo != null && r.tipo.toLowerCase(Locale.ROOT).contains("recic")) {
+                // Más pesado
+                if (masPesado == null || r.peso > masPesado.peso) {
+                    masPesado = r;
+                }
+
+                // Contar reciclados
+                if (r.tipo != null && r.tipo.toLowerCase(Locale.ROOT).contains("reciclable")) {
                     reciclados++;
+                }
+
+                // Categorías únicas
+                if (r.categoria != null && !r.categoria.isEmpty()) {
+                    categoriasUnicas.add(r.categoria);
                 }
 
                 // Contar ubicación más frecuente
@@ -88,13 +115,26 @@ public class DashboardFragment extends Fragment {
             // Porcentaje reciclados
             double porcentaje = total > 0 ? (reciclados * 100.0 / total) : 0;
 
+            // Última ubicación registrada
+            String ultimaUbicacion = list.isEmpty() || list.get(0).ubicacion == null ? "-" : list.get(0).ubicacion;
+
             // Setear datos en la UI
             tvTotalReg.setText(String.valueOf(total));
             tvTotalKg.setText(String.format(Locale.getDefault(), "%.2f kg", kg));
             tvUltimo.setText(ultimo);
             tvMasValioso.setText(masValioso != null ? masValioso.tipo + " ($" + masValioso.valorAproximado + ")" : "-");
-            tvPorcentajeReciclados.setText(String.format(Locale.getDefault(), "%.1f%%", porcentaje));
+            if (total > 0) {
+                tvPorcentajeReciclados.setText(String.format(Locale.getDefault(), "%.1f%%", porcentaje));
+            } else {
+                tvPorcentajeReciclados.setText("Sin datos");
+            }
             tvUbicacionFrecuente.setText(ubicacionFrecuente);
+
+            // NUEVOS campos
+            tvCategorias.setText(total > 0 ? categoriasUnicas.size() + " categorías" : "Sin datos");
+            tvMasPesado.setText(masPesado != null ? masPesado.nombre + " (" + masPesado.peso + " kg)" : "-");
+            tvValorTotal.setText("$" + valorTotal);
+            tvUltimaUbicacion.setText(ultimaUbicacion);
         });
 
         vm.cargarTodos();
