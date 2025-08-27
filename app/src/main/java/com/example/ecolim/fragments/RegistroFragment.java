@@ -24,10 +24,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import android.content.Context;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 public class RegistroFragment extends Fragment {
 
-    private EditText etTipo, etPeso, etCategoria, etDescripcion, etOrigen, etValor, etResponsable, etUbicacion;
+    private Spinner spTipo, spCategoria;
+    private EditText etNombre, etPeso, etDescripcion, etOrigen, etValor, etResponsable, etUbicacion;
     private Button btnGuardar, btnEscanear;
     private TextView tvCodigo;
     private String codigoQR = "";
@@ -37,12 +40,30 @@ public class RegistroFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_registro, container, false);
 
-        // Campos existentes
-        etTipo = view.findViewById(R.id.etTipo);
-        etPeso = view.findViewById(R.id.etPeso);
 
-        // Nuevos campos
-        etCategoria = view.findViewById(R.id.etCategoria);
+        spTipo = view.findViewById(R.id.spTipo);
+        spCategoria = view.findViewById(R.id.spCategoria);
+
+        // Configurar adaptadores
+        ArrayAdapter<CharSequence> adapterTipo = ArrayAdapter.createFromResource(
+                getContext(),
+                R.array.tipos_residuos,
+                android.R.layout.simple_spinner_item
+        );
+        adapterTipo.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spTipo.setAdapter(adapterTipo);
+
+        ArrayAdapter<CharSequence> adapterCategoria = ArrayAdapter.createFromResource(
+                getContext(),
+                R.array.categorias_residuos,
+                android.R.layout.simple_spinner_item
+        );
+        adapterCategoria.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spCategoria.setAdapter(adapterCategoria);
+
+
+        etNombre = view.findViewById(R.id.etNombre);
+        etPeso = view.findViewById(R.id.etPeso);
         etDescripcion = view.findViewById(R.id.etDescripcion);
         etOrigen = view.findViewById(R.id.etOrigen);
         etValor = view.findViewById(R.id.etValor);
@@ -55,6 +76,8 @@ public class RegistroFragment extends Fragment {
 
         btnGuardar.setOnClickListener(v -> guardarResiduo());
         btnEscanear.setOnClickListener(v -> iniciarEscaneo());
+
+
 
         return view;
     }
@@ -83,9 +106,10 @@ public class RegistroFragment extends Fragment {
 
     private void guardarResiduo() {
         // Captura de valores
-        String tipo = etTipo.getText().toString().trim();
+        String tipo = spTipo.getSelectedItem().toString();
+        String nombre = etNombre.getText().toString().trim();
         String pesoStr = etPeso.getText().toString().trim();
-        String categoria = etCategoria.getText().toString().trim();
+        String categoria = spCategoria.getSelectedItem().toString();
         String descripcion = etDescripcion.getText().toString().trim();
         String origen = etOrigen.getText().toString().trim();
         String valorStr = etValor.getText().toString().trim();
@@ -122,6 +146,7 @@ public class RegistroFragment extends Fragment {
 
         // Crear objeto Residuo con todos los campos
         Residuo residuo = new Residuo(
+                nombre,
                 tipo,
                 categoria,
                 peso,  // Ahora correcto
@@ -130,7 +155,7 @@ public class RegistroFragment extends Fragment {
                 descripcion,
                 origen,
                 valor,
-                "Reciclado", // Estado por defecto, puedes cambiarlo según lógica
+                "Procesado", // Estado por defecto, puedes cambiarlo según lógica
                 responsable,
                 ubicacion
         );
@@ -151,9 +176,10 @@ public class RegistroFragment extends Fragment {
     }
 
     private void limpiarCampos() {
-        etTipo.setText("");
+        spTipo.setSelection(0);
+        etNombre.setText("");
         etPeso.setText("");
-        etCategoria.setText("");
+        spCategoria.setSelection(0);
         etDescripcion.setText("");
         etOrigen.setText("");
         etValor.setText("");

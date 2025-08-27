@@ -40,7 +40,7 @@ public class ResiduoAdapter extends RecyclerView.Adapter<ResiduoAdapter.VH> {
         h.tvFecha.setText("Fecha: " + (r.fecha != null ? r.fecha : "-"));
         h.tvCodigo.setText("Código: " + (r.codigo != null ? r.codigo : "-"));
         h.tvOrigen.setText("Origen: " + (r.origen != null ? r.origen : "-"));
-        h.tvValor.setText("Valor: $" + r.valorAproximado);
+        h.tvValor.setText("Valor: S/" + r.valorAproximado);
         h.tvResponsable.setText("Responsable: " + (r.responsable != null ? r.responsable : "-"));
         h.tvUbicacion.setText("Ubicación: " + (r.ubicacion != null ? r.ubicacion : "-"));
     }

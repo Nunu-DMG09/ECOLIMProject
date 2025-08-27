@@ -5,11 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/etTipo"
-        android:hint="Tipo de residuo"
+    <Spinner
+        android:id="@+id/spTipo"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
+    <EditText
+        android:id="@+id/etNombre"
+        android:hint="Nombre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <EditText
         android:id="@+id/etPeso"
@@ -20,11 +24,11 @@
         android:layout_marginTop="8dp"/>
 
 
-    <EditText
-        android:id="@+id/etCategoria"
-        android:hint="Categoría"
+    <Spinner
+        android:id="@+id/spCategoria"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"/>
 
     <EditText
         android:id="@+id/etDescripcion"

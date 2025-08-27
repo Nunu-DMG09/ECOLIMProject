@@ -8,6 +8,7 @@ public class Residuo {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
+    public String nombre;
     public String tipo;
     public String categoria;
     public double peso;
@@ -20,9 +21,10 @@ public class Residuo {
     public String responsable;
     public String ubicacion;
 
-    public Residuo(String tipo, String categoria, double peso, String fecha, String codigo,
+    public Residuo(String nombre, String tipo, String categoria, double peso, String fecha, String codigo,
                    String descripcion, String origen, double valorAproximado,
                    String estado, String responsable, String ubicacion) {
+        this.nombre = nombre;
         this.tipo = tipo;
         this.categoria = categoria;
         this.peso = peso;
