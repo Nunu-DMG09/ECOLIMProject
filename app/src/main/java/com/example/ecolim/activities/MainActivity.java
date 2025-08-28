@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import com.example.ecolim.R;
+import com.example.ecolim.fragments.CalculadoraFragment;
 import com.example.ecolim.fragments.DashboardFragment;
 import com.example.ecolim.fragments.RegistroFragment;
 import com.example.ecolim.fragments.ReportesFragment;
@@ -49,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
                 selected = new ReportesFragment();
             } else if (item.getItemId() == R.id.nav_usuario) {
                 selected = new UsuarioFragment();
+            }else if (item.getItemId() == R.id.nav_calculadora) {
+                selected = new CalculadoraFragment();
             }
             if (selected != null) {
                 getSupportFragmentManager().beginTransaction()

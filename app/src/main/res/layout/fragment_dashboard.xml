@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!-- Total kg -->
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_marginTop="8dp"
@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!-- Último registro -->
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_marginTop="8dp"
@@ -87,7 +87,7 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!-- Más valioso -->
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_marginTop="8dp"
@@ -110,7 +110,7 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!-- % Reciclados -->
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_marginTop="8dp"
@@ -133,7 +133,7 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!-- Ubicación frecuente -->
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_marginTop="8dp"
@@ -156,7 +156,7 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!-- Categorías únicas -->
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_marginTop="8dp"
@@ -179,7 +179,7 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!-- Más pesado -->
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_marginTop="8dp"
@@ -202,7 +202,7 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!-- Valor total -->
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_marginTop="8dp"
@@ -225,7 +225,7 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!-- Última ubicación -->
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_marginTop="8dp"
@@ -248,7 +248,7 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!-- Top categorías -->
+
         <LinearLayout
             android:orientation="vertical"
             android:layout_marginTop="8dp"

@@ -94,7 +94,7 @@ public class ReportesFragment extends Fragment {
 
 
             PdfPTable table = new PdfPTable(12);
-            table.setWidthPercentage(100);
+            table.setWidthPercentage(110);
             table.setWidths(new float[]{2f, 3f, 3f, 3f, 3f, 3f, 2f, 3f, 3f, 3f, 3f, 3f});
 
             // Encabezados con fondo
@@ -103,7 +103,7 @@ public class ReportesFragment extends Fragment {
                 PdfPCell cell = new PdfPCell(new Paragraph(header, encabezadoFont));
                 cell.setBackgroundColor(new BaseColor(0, 51, 147));
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                cell.setPadding(8);
+                cell.setPadding(4);
                 table.addCell(cell);
             }
 
@@ -118,7 +118,7 @@ public class ReportesFragment extends Fragment {
                 table.addCell(createCell(residuo.peso + " kg", normalFont));
                 table.addCell(createCell(residuo.fecha, normalFont));
                 table.addCell(createCell(residuo.origen, normalFont));
-                table.addCell(createCell("$" + residuo.valorAproximado, normalFont));
+                table.addCell(createCell("S/" + residuo.valorAproximado, normalFont));
                 table.addCell(createCell(residuo.responsable, normalFont));
                 table.addCell(createCell(residuo.estado, normalFont));
             }
@@ -138,7 +138,7 @@ public class ReportesFragment extends Fragment {
 
     private PdfPCell createCell(String text, Font font) {
         PdfPCell cell = new PdfPCell(new Paragraph(text != null ? text : "-", font));
-        cell.setPadding(6);
+        cell.setPadding(2);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         return cell;
     }
