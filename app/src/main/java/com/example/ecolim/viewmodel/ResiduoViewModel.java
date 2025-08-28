@@ -27,7 +27,7 @@ public class ResiduoViewModel extends AndroidViewModel {
     public void cargarTodos() {
         Executors.newSingleThreadExecutor().execute(() -> {
             List<Residuo> list = db.residuoDao().getAll();
-            list.sort((a, b) -> b.fecha.compareTo(a.fecha)); // Orden descendente por fecha
+            list.sort((a, b) -> b.fecha.compareTo(a.fecha));
             residuos.postValue(list);
             residuosFiltrados.postValue(list);
         });

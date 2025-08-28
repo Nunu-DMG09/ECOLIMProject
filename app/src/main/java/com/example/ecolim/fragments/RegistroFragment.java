@@ -44,7 +44,7 @@ public class RegistroFragment extends Fragment {
         spTipo = view.findViewById(R.id.spTipo);
         spCategoria = view.findViewById(R.id.spCategoria);
 
-        // Configurar adaptadores
+
         ArrayAdapter<CharSequence> adapterTipo = ArrayAdapter.createFromResource(
                 getContext(),
                 R.array.tipos_residuos,
@@ -105,7 +105,7 @@ public class RegistroFragment extends Fragment {
     }
 
     private void guardarResiduo() {
-        // Captura de valores
+
         String tipo = spTipo.getSelectedItem().toString();
         String nombre = etNombre.getText().toString().trim();
         String pesoStr = etPeso.getText().toString().trim();
@@ -139,23 +139,23 @@ public class RegistroFragment extends Fragment {
 
         String fecha = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
-        // ✅ Obtener el nombre del usuario logueado
+
         String responsable = getActivity()
                 .getSharedPreferences("ECOLIM_PREFS", Context.MODE_PRIVATE)
                 .getString("usuario", "Desconocido");
 
-        // Crear objeto Residuo con todos los campos
+
         Residuo residuo = new Residuo(
                 nombre,
                 tipo,
                 categoria,
-                peso,  // Ahora correcto
+                peso,
                 fecha,
                 codigoQR.isEmpty() ? "-" : codigoQR,
                 descripcion,
                 origen,
                 valor,
-                "Procesado", // Estado por defecto, puedes cambiarlo según lógica
+                "Procesado",
                 responsable,
                 ubicacion
         );

@@ -9,7 +9,7 @@ public class RetrofitClient {
     public static Retrofit getInstance() {
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl("https://tu-backend.ecolim.pe/api/") // <-- CAMBIA ESTO
+                    .baseUrl("https://tu-backend.ecolim.pe/api/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }

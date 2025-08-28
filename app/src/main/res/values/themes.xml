@@ -1,22 +1,21 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="Theme.Ecolim" parent="Theme.Material3.Light.NoActionBar">
-        <!-- Primary brand color -->
+
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorOnPrimary">@color/white</item>
 
-        <!-- Secondary brand color -->
+
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorOnSecondary">@color/white</item>
 
-        <!-- Accent color -->
+
         <item name="colorTertiary">@color/colorAccent</item>
 
-        <!-- Neutral background -->
+
         <item name="colorSurface">@color/colorNeutral</item>
         <item name="colorOnSurface">@color/black</item>
 
-        <!-- StatusBar y NavigationBar -->
         <item name="android:statusBarColor">@color/colorSecondary</item>
         <item name="android:navigationBarColor">@color/colorSecondary</item>
     </style>

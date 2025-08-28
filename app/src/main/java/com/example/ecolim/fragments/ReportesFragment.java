@@ -77,33 +77,33 @@ public class ReportesFragment extends Fragment {
             PdfWriter.getInstance(document, outputStream);
             document.open();
 
-            // Estilos
+
             Font tituloFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
             Font encabezadoFont = new Font(Font.FontFamily.HELVETICA, 11, Font.BOLD, BaseColor.WHITE);
             Font normalFont = new Font(Font.FontFamily.HELVETICA, 10, Font.NORMAL);
 
-            // Título
+
             Paragraph title = new Paragraph("Reporte de Residuos\n\n", tituloFont);
             title.setAlignment(Element.ALIGN_CENTER);
             document.add(title);
 
-            // Fecha
+
             document.add(new Paragraph("Fecha: " +
                     new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault()).format(new java.util.Date())));
             document.add(new Paragraph("\n"));
 
-            // Tabla con 12 columnas
+
             PdfPTable table = new PdfPTable(12);
             table.setWidthPercentage(100);
-            table.setWidths(new float[]{2f, 3f, 3f, 3f, 3f, 3f, 2f, 3f, 3f, 3f, 3f, 3f}); // Ajustado
+            table.setWidths(new float[]{2f, 3f, 3f, 3f, 3f, 3f, 2f, 3f, 3f, 3f, 3f, 3f});
 
             // Encabezados con fondo
             String[] headers = {"ID", "Código", "Nombre", "Tipo", "Categoría", "Descripción", "Peso", "Fecha", "Origen", "Valor", "Responsable", "Estado"};
             for (String header : headers) {
                 PdfPCell cell = new PdfPCell(new Paragraph(header, encabezadoFont));
-                cell.setBackgroundColor(new BaseColor(0, 51, 147)); // Azul oscuro
+                cell.setBackgroundColor(new BaseColor(0, 51, 147));
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                cell.setPadding(8); // Más separación
+                cell.setPadding(8);
                 table.addCell(cell);
             }
 
@@ -135,10 +135,10 @@ public class ReportesFragment extends Fragment {
         }
     }
 
-    // Metodo auxiliar para evitar null y mejorar alineación
+
     private PdfPCell createCell(String text, Font font) {
         PdfPCell cell = new PdfPCell(new Paragraph(text != null ? text : "-", font));
-        cell.setPadding(6); // Más separación entre texto y bordes
+        cell.setPadding(6);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         return cell;
     }

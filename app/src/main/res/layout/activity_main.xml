@@ -7,9 +7,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Toolbar superior -->
-
-    <!-- Contenedor de Fragmentos -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
         android:layout_width="match_parent"
@@ -26,7 +23,6 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <!-- Barra de navegación inferior -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
@@ -34,7 +30,6 @@
         android:background="@color/white"
         app:itemIconTint="@color/nav_item_color"
         app:itemTextColor="@color/nav_item_color"
-        app:itemRippleColor="@color/colorAccent"
         app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_nav_menu" />
 </LinearLayout>

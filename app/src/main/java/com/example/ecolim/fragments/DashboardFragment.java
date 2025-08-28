@@ -37,7 +37,7 @@ public class DashboardFragment extends Fragment {
     private ResiduoViewModel vm;
     private TextView tvTotalReg, tvTotalKg, tvUltimo, tvMasValioso, tvPorcentajeReciclados, tvUbicacionFrecuente;
     private TextView tvCategorias, tvMasPesado, tvValorTotal, tvUltimaUbicacion;
-    private TextView tvTopCategorias, tvResiduoFrecuente, tvPromedioPeso, tvRecicladosVsNo, tvValorPromedio;
+    private TextView tvTopCategorias, tvResiduoFrecuente, tvPromedioPeso, tvValorPromedio;
     private Button btnGenerarPDF;
 
     private List<Residuo> listaResiduos = new ArrayList<>();
@@ -64,7 +64,6 @@ public class DashboardFragment extends Fragment {
         tvTopCategorias = v.findViewById(R.id.tvTopCategorias);
         tvResiduoFrecuente = v.findViewById(R.id.tvResiduoFrecuente);
         tvPromedioPeso = v.findViewById(R.id.tvPromedioPeso);
-        tvRecicladosVsNo = v.findViewById(R.id.tvRecicladosVsNo);
         tvValorPromedio = v.findViewById(R.id.tvValorPromedio);
 
         btnGenerarPDF = v.findViewById(R.id.btnGenerarPDF);
@@ -77,7 +76,7 @@ public class DashboardFragment extends Fragment {
         vm = new ViewModelProvider(requireActivity()).get(ResiduoViewModel.class);
 
         vm.residuos.observe(getViewLifecycleOwner(), list -> {
-            listaResiduos = list; // Para usar en el PDF
+            listaResiduos = list;
             int total = list.size();
             double kg = 0;
             String ultimo = "-";
@@ -85,7 +84,6 @@ public class DashboardFragment extends Fragment {
             Residuo masValioso = null;
             Residuo masPesado = null;
             int reciclados = 0;
-            int noReciclados = 0;
             double valorTotal = 0;
 
             Map<String, Integer> ubicaciones = new HashMap<>();
@@ -112,8 +110,6 @@ public class DashboardFragment extends Fragment {
 
                 if (r.tipo != null && r.tipo.toLowerCase(Locale.ROOT).contains("reciclable")) {
                     reciclados++;
-                } else {
-                    noReciclados++;
                 }
 
                 if (r.categoria != null && !r.categoria.isEmpty()) {
@@ -132,25 +128,24 @@ public class DashboardFragment extends Fragment {
 
             String ultimaUbicacion = list.isEmpty() || list.get(0).ubicacion == null ? "-" : list.get(0).ubicacion;
 
-            // Ubicación más frecuente
+
             String ubicacionFrecuente = getMaxKey(ubicaciones);
 
-            // Categoría más frecuente (Top)
+
             String topCategorias = getTopItems(categoriasContadas, 3);
 
-            // Residuo más frecuente
+
             String residuoFrecuente = getMaxKey(residuosContados);
 
-            // Porcentaje reciclados
+
             double porcentaje = total > 0 ? (reciclados * 100.0 / total) : 0;
 
-            // Promedio peso
+
             double promedioPeso = total > 0 ? (kg / total) : 0;
 
-            // Promedio valor
+
             double promedioValor = total > 0 ? (valorTotal / total) : 0;
 
-            // Setear en UI
             tvTotalReg.setText(String.valueOf(total));
             tvTotalKg.setText(String.format(Locale.getDefault(), "%.2f kg", kg));
             tvUltimo.setText(ultimo);
@@ -161,12 +156,9 @@ public class DashboardFragment extends Fragment {
             tvMasPesado.setText(masPesado != null ? masPesado.nombre + " (" + masPesado.peso + " kg)" : "-");
             tvValorTotal.setText("S/ " + valorTotal);
             tvUltimaUbicacion.setText(ultimaUbicacion);
-
-            // Nuevos datos
             tvTopCategorias.setText(topCategorias);
             tvResiduoFrecuente.setText(residuoFrecuente != null ? residuoFrecuente : "-");
             tvPromedioPeso.setText(String.format(Locale.getDefault(), "%.2f kg", promedioPeso));
-            tvRecicladosVsNo.setText("Reciclables: " + reciclados + " | No reciclables: " + noReciclados);
             tvValorPromedio.setText(String.format(Locale.getDefault(), "S/ %.2f", promedioValor));
         });
 
@@ -199,7 +191,7 @@ public class DashboardFragment extends Fragment {
 
     private void generarPDF() {
         try {
-            // Ruta para guardar el archivo
+
             String pdfPath = requireContext().getExternalFilesDir(null).getAbsolutePath();
             File file = new File(pdfPath, "dashboard_residuos.pdf");
             FileOutputStream outputStream = new FileOutputStream(file);
@@ -208,23 +200,19 @@ public class DashboardFragment extends Fragment {
             PdfWriter.getInstance(document, outputStream);
             document.open();
 
-            // Fuentes
             Font tituloFont = new Font(Font.FontFamily.HELVETICA, 20, Font.BOLD);
             Font subtituloFont = new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD);
             Font normalFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
 
-            // Título
             Paragraph title = new Paragraph("Reporte Dashboard\n\n", tituloFont);
             title.setAlignment(Element.ALIGN_CENTER);
             document.add(title);
 
-            // Fecha
             String fecha = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
                     .format(new java.util.Date());
             document.add(new Paragraph("Fecha de generación: " + fecha, normalFont));
             document.add(new Paragraph("\n"));
 
-            // Datos principales
             document.add(new Paragraph("Resumen general:", subtituloFont));
             document.add(new Paragraph("Total registros: " + tvTotalReg.getText(), normalFont));
             document.add(new Paragraph("Total kg: " + tvTotalKg.getText(), normalFont));
@@ -239,7 +227,6 @@ public class DashboardFragment extends Fragment {
             document.add(new Paragraph("Top categorías:\n" + tvTopCategorias.getText(), normalFont));
             document.add(new Paragraph("Residuo más frecuente: " + tvResiduoFrecuente.getText(), normalFont));
             document.add(new Paragraph("Promedio peso: " + tvPromedioPeso.getText(), normalFont));
-            document.add(new Paragraph("Reciclables vs No: " + tvRecicladosVsNo.getText(), normalFont));
             document.add(new Paragraph("Valor promedio: " + tvValorPromedio.getText(), normalFont));
 
             document.close();

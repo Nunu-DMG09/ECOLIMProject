@@ -10,72 +10,97 @@
 
     <TextView
         android:id="@+id/tvTipo"
-        android:textStyle="bold"
-        android:textColor="#003393"
         android:text="Tipo"
-        android:textSize="16sp"
+        android:textColor="#003393"
+        android:textSize="14sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <!-- NUEVO: Nombre -->
     <TextView
         android:id="@+id/tvNombre"
-        android:textStyle="bold"
-        android:textColor="#0081E9"
         android:text="Nombre"
-        android:textSize="16sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <TextView android:id="@+id/tvCategoria"
-        android:textStyle="bold"
         android:textColor="#003393"
+        android:textSize="14sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tvCategoria"
         android:text="Categoría"
+        android:textColor="#003393"
+        android:textSize="14sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <TextView android:id="@+id/tvDescripcion"
+    <TextView
+        android:id="@+id/tvDescripcion"
         android:text="Descripción"
+        android:textColor="#003393"
+        android:textSize="14sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <TextView android:id="@+id/tvPeso"
+    <TextView
+        android:id="@+id/tvPeso"
         android:text="Peso"
+        android:textColor="#003393"
+        android:textSize="14sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <TextView android:id="@+id/tvFecha"
+    <TextView
+        android:id="@+id/tvFecha"
         android:text="Fecha"
+        android:textColor="#003393"
+        android:textSize="14sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <TextView android:id="@+id/tvCodigo"
+    <TextView
+        android:id="@+id/tvCodigo"
         android:text="Código"
+        android:textColor="#003393"
+        android:textSize="14sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <TextView android:id="@+id/tvOrigen"
+    <TextView
+        android:id="@+id/tvOrigen"
         android:text="Origen"
+        android:textColor="#003393"
+        android:textSize="14sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <TextView android:id="@+id/tvValor"
+    <TextView
+        android:id="@+id/tvValor"
         android:text="Valor"
+        android:textColor="#003393"
+        android:textSize="14sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <TextView android:id="@+id/tvResponsable"
+    <TextView
+        android:id="@+id/tvResponsable"
         android:text="Responsable"
+        android:textColor="#003393"
+        android:textSize="14sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <TextView android:id="@+id/tvUbicacion"
+    <TextView
+        android:id="@+id/tvUbicacion"
         android:text="Ubicación"
+        android:textColor="#003393"
+        android:textSize="14sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-    <!-- NUEVO: Estado -->
-    <TextView android:id="@+id/tvEstado"
+
+    <TextView
+        android:id="@+id/tvEstado"
         android:text="Estado"
+        android:textColor="#003393"
+        android:textSize="14sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 </LinearLayout>

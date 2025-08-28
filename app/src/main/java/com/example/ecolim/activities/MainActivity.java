@@ -21,18 +21,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Obtener nombre usuario
         String usuario = getSharedPreferences("ECOLIM_PREFS", MODE_PRIVATE)
                 .getString("usuario", "Usuario");
 
-        // Configurar Toolbar
         MaterialToolbar toolbar = findViewById(R.id.topAppBar);
         toolbar.setTitle("Bienvenido " + usuario);
 
-        // Acción cerrar sesión
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_logout) {
-                // Borrar sesión
+
                 getSharedPreferences("ECOLIM_PREFS", MODE_PRIVATE).edit().clear().apply();
                 startActivity(new Intent(this, LoginActivity.class));
                 finish();
@@ -41,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
 
-        // Navegación inferior
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment selected = null;
@@ -62,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
-        // Por defecto Dashboard
         bottomNav.setSelectedItemId(R.id.nav_dashboard);
     }
 }

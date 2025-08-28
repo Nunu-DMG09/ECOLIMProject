@@ -21,7 +21,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-        <!-- Login como pantalla inicial -->
+
         <activity
             android:name=".activities.LoginActivity"
             android:exported="true">
@@ -30,8 +30,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- Login -->
-        <!-- MainActivity sin filtro -->
+
         <activity
             android:name=".activities.MainActivity"
             android:exported="false" />

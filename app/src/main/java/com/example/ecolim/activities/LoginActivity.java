@@ -25,7 +25,6 @@ public class LoginActivity extends AppCompatActivity {
 
         AppDatabase db = AppDatabase.getInstance(this);
 
-        // Insertar usuarios de prueba en segundo plano
         new Thread(() -> {
             if (db.usuarioDao().getUsuariosCount() == 0) {
                 db.usuarioDao().insert(new Usuario("David", "david@gmail.com", "1234"));
